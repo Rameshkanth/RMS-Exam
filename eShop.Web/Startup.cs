@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using eShop.Web.IdentityProvider;
+using Microsoft.AspNetCore.Identity;
+using System.Data.SqlClient;
+using eShop.Web.Services;
+using eShop.Web.DataAccess.UserIdentity;
 
 namespace eShop.Web
 {
@@ -17,8 +22,15 @@ namespace eShop.Web
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            if (env.IsDevelopment())
+            {
+                // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets<Startup>();
+            }
+
+            builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
 
@@ -27,8 +39,25 @@ namespace eShop.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            // Add identity types
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultTokenProviders();
+
+            // Identity Services
+            services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();
+            services.AddTransient<IRoleStore<ApplicationRole>, CustomRoleStore>();
+
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddTransient(e => new SqlConnection(connectionString));
+            services.AddTransient<IUserRepository, UserRepository>();
+
             services.AddMvc();
+
+            // Add application services.
+            services.AddTransient<IEmailSender, MessageServices>();
+            services.AddTransient<ISmsSender, MessageServices>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +69,7 @@ namespace eShop.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
             else
@@ -48,6 +78,10 @@ namespace eShop.Web
             }
 
             app.UseStaticFiles();
+
+            app.UseIdentity();
+
+            app.UseCookieAuthentication();
 
             app.UseMvc(routes =>
             {
