@@ -10,7 +10,7 @@ namespace eShop.Web.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Register", "Account");
         }
 
         public IActionResult About()
