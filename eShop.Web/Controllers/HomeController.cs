@@ -10,7 +10,11 @@ namespace eShop.Web.Controllers
     {
         public IActionResult Index()
         {
-            return RedirectToAction("Register", "Account");
+            if (!User.Identity.IsAuthenticated) {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View();
         }
 
         public IActionResult About()

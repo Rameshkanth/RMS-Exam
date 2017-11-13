@@ -11,7 +11,7 @@ namespace eShop.Test.Identity
     public class UserManagerTest
     {
         [TestMethod]
-        public async Task User_Registration_Calls_UserManager_CreateAsync_Test()
+        public async Task User_Registration_Calls_UserManager_CreateAsync()
         {
             
             // Setup

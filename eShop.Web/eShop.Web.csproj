@@ -37,4 +37,8 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Views\Shared\_LoginPartial.cshtml" />
+  </ItemGroup>
+
 </Project>

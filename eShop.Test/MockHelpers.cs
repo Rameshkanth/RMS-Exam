@@ -105,6 +105,16 @@ namespace eShop.Test
             return auth;
         }
 
+        public static Mock<UserManager<ApplicationUser>> SetupUserManager(ApplicationUser user)
+        {
+            var manager = MockHelpers.MockUserManager<ApplicationUser>();
+            manager.Setup(m => m.FindByNameAsync(user.UserName)).ReturnsAsync(user);
+            manager.Setup(m => m.FindByIdAsync(user.Id.ToString())).ReturnsAsync(user);
+            manager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.Id.ToString());
+            manager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
+            return manager;
+        }
+
         public static SignInManager<ApplicationUser> SetupSignInManager(UserManager<ApplicationUser> manager, HttpContext context, StringBuilder logStore = null, IdentityOptions identityOptions = null)
         {
             var contextAccessor = new Mock<IHttpContextAccessor>();
