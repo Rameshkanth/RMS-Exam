@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using System.Data.SqlClient;
 using eShop.Web.Services;
 using eShop.Web.DataAccess.UserIdentity;
+using eShop.Web.Core.Repositories;
+using eShop.Web.DataAccess.Repositories;
+using eShop.Web.Core.Entities;
+using eShop.Web.ViewModels;
 
 namespace eShop.Web
 {
@@ -47,9 +51,18 @@ namespace eShop.Web
             services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, CustomRoleStore>();
 
+            //Database connection and Repositories
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddTransient(e => new SqlConnection(connectionString));
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IProductService, ProductService>();
+
+            //Payment Gateways
+            services.AddTransient<ICustomerPaymentService, PaymentGateWayA>();
+
+            //RSA Crypto Service
+            services.AddSingleton<RSACryptoService>();
 
             services.AddMvc();
 

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace eShop.Web.Models.AccountViewModels
+namespace eShop.Web.ViewModels
 {
-    public class LoginViewModel
+    public class LoginVm
     {
         [Required]
         [EmailAddress]

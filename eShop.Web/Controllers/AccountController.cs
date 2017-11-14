@@ -1,14 +1,11 @@
 ﻿using eShop.Web.IdentityProvider;
-using eShop.Web.Models.AccountViewModels;
+using eShop.Web.ViewModels;
 using eShop.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace eShop.Web.Controllers
@@ -108,7 +105,7 @@ namespace eShop.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginVm model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)

@@ -1,0 +1,9 @@
+﻿@model eShop.Web.ViewModels.OrderConfirmationVm
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+<h2>@ViewData["Title"]</h2>
+<p>@Model.Message</p>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
