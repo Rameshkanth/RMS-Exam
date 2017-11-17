@@ -10,7 +10,7 @@ namespace eShop.Web.Entities
 
         public string ShortDescription { get; set; }
 
-        public double Price { get; set; }
+        public float Price { get; set; }
 
         public string ImageUrl
         {

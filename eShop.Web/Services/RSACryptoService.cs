@@ -1,4 +1,5 @@
-﻿using System;
+﻿using eShop.Web.Helpers;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,130 +7,87 @@ namespace eShop.Web.Services
 {
     public class RSACryptoService
     {
-        public string Encrypt(string encryptText, out RSAParameters privateKey)
+        private UnicodeEncoding ByteConverter;
+        private RSACryptoServiceProvider RSA;
+        private byte[] plaintext;
+        private byte[] encryptedtext;
+        private static readonly Lazy<RSACryptoService> instance = new Lazy<RSACryptoService>(() => new RSACryptoService());
+
+        private RSACryptoService()
         {
-            try
+            ByteConverter = new UnicodeEncoding();
+            RSA = new RSACryptoServiceProvider();
+        }
+
+        public static RSACryptoService Instance
+        {
+            get
             {
-                //Create a UnicodeEncoder to convert between byte array and string.
-                UnicodeEncoding ByteConverter = new UnicodeEncoding();
-
-                //Create byte arrays to hold original, encrypted, and decrypted data.
-                byte[] dataToEncrypt = ByteConverter.GetBytes(encryptText);
-                byte[] encryptedData;
-
-                //Create a new instance of RSACryptoServiceProvider to generate
-                //public and private key data.
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-                    var publicKey = RSA.ExportParameters(false);
-                   
-
-                    //Pass the data to ENCRYPT, the public key information 
-                    //(using RSACryptoServiceProvider.ExportParameters(false),
-                    //and a boolean flag specifying no OAEP padding.
-                    encryptedData = RSAEncrypt(dataToEncrypt, publicKey, false);
-
-                    privateKey = RSA.ExportParameters(true);
-
-                    return ByteConverter.GetString(encryptedData);
-                }
-            }
-            catch (ArgumentNullException)
-            {
-                privateKey = new RSAParameters();
-                return string.Empty;
+                return instance.Value;
             }
         }
 
-        public string Decrypt(string decryptText, RSAParameters privateKey)
+        public string Encrypt(string textToEncrypted, string privateKeyContainerId)
         {
-            try
-            {
-                //Create a UnicodeEncoder to convert between byte array and string.
-                UnicodeEncoding ByteConverter = new UnicodeEncoding();
-
-                //Create byte arrays to hold original, encrypted, and decrypted data.
-                byte[] encryptedData = ByteConverter.GetBytes(decryptText);
-                byte[] decryptedData;
-
-                //Create a new instance of RSACryptoServiceProvider to generate
-                //public and private key data.
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-   
-                    //Pass the data to DECRYPT, the private key information 
-                    //(using RSACryptoServiceProvider.ExportParameters(true),
-                    //and a boolean flag specifying no OAEP padding.
-                    decryptedData = RSADecrypt(encryptedData, privateKey, false);
-
-                    return ByteConverter.GetString(decryptedData);
-
-                }
-            }
-            catch (ArgumentNullException)
-            {
-                return string.Empty;
-            }
-
+            var privateKeyContainerIdHash = CryptographyHelper.GetMd5Hash(privateKeyContainerId);
+            plaintext = ByteConverter.GetBytes(textToEncrypted);
+            encryptedtext = Encryption(plaintext, true, privateKeyContainerIdHash);
+            return Convert.ToBase64String(encryptedtext);
         }
 
-        byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+        public string Decrypt(string textToBeDecrypted, string privateKeyContainerId)
+        {
+            var privateKeyContainerIdHash = CryptographyHelper.GetMd5Hash(privateKeyContainerId);
+            encryptedtext = Convert.FromBase64String(textToBeDecrypted);
+            byte[] decryptedtex = Decryption(encryptedtext, true, privateKeyContainerIdHash);
+            return ByteConverter.GetString(decryptedtex);
+        }
+
+        private byte[] Encryption(byte[] data, bool doOAEPPadding, string privateKeyContainerId)
         {
             try
             {
                 byte[] encryptedData;
-                //Create a new instance of RSACryptoServiceProvider.
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+
+                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider(new CspParameters()
                 {
-
-                    //Import the RSA Key information. This only needs
-                    //toinclude the public key information.
-                    RSA.ImportParameters(RSAKeyInfo);
-
-                    //Encrypt the passed byte array and specify OAEP padding.  
-                    //OAEP padding is only available on Microsoft Windows XP or
-                    //later.  
-                    encryptedData = RSA.Encrypt(DataToEncrypt, DoOAEPPadding);
+                    KeyContainerName = privateKeyContainerId,
+                    Flags = CspProviderFlags.UseMachineKeyStore, 
+                }))
+                {
+                    encryptedData = RSA.Encrypt(data, doOAEPPadding);
                 }
+
                 return encryptedData;
             }
-            //Catch and display a CryptographicException  
-            //to the console.
             catch (CryptographicException e)
             {
-                Console.WriteLine(e.Message);
-
                 return null;
             }
 
         }
 
-        byte[] RSADecrypt(byte[] DataToDecrypt, RSAParameters RSAKeyInfo, bool DoOAEPPadding)
+        private byte[] Decryption(byte[] data, bool doOAEPPadding, string privateKeyContainerId)
         {
             try
             {
                 byte[] decryptedData;
-                //Create a new instance of RSACryptoServiceProvider.
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-                    //Import the RSA Key information. This needs
-                    //to include the private key information.
-                    RSA.ImportParameters(RSAKeyInfo);
 
-                    //Decrypt the passed byte array and specify OAEP padding.  
-                    //OAEP padding is only available on Microsoft Windows XP or
-                    //later.  
-                    decryptedData = RSA.Decrypt(DataToDecrypt, DoOAEPPadding);
+                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider(new CspParameters()
+                {
+                    KeyContainerName = privateKeyContainerId,
+                    Flags = CspProviderFlags.UseMachineKeyStore,
+                }))
+                {
+                    decryptedData = RSA.Decrypt(data, doOAEPPadding);
                 }
+
                 return decryptedData;
             }
-            //Catch and display a CryptographicException  
-            //to the console.
             catch (CryptographicException e)
             {
                 return null;
             }
-
         }
     }
 }

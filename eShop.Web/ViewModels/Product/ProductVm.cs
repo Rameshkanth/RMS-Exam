@@ -20,7 +20,8 @@ namespace eShop.Web.ViewModels
 
         [Required]
         [Display(Name = "Price")]
-        public double Price { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public float Price { get; set; }
 
         public string ImageUrl { get; set; }
     }

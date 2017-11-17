@@ -1,6 +1,12 @@
-﻿body {
+﻿html {
+    font-family: 'PTSansRegular', Arial, Helvetica, sans-serif !important;
+
+}
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family: 'PTSansRegular', Arial, Helvetica, sans-serif!important;
 }
 
 /* Wrapping element */
@@ -34,4 +40,12 @@ textarea {
     .carousel-caption {
         display: none;
     }
+}
+
+.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 0px!important;
+}
+
+.table td tr {
+    border: 0px !important;
 }

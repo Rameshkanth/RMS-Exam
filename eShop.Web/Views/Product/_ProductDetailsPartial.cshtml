@@ -1,0 +1,11 @@
+﻿@model eShop.Web.ViewModels.ProductVm
+
+    <span class="col-md-2 control-label">@Model.ProcuctName</span>
+    <img class="col-md-2" src="~/Images/products/@Model.ImageUrl" style="overflow: hidden; position: relative; width:200px; height:200px;" />
+    <span class="col-md-2 control-label">@Model.ShortDescription</span>
+    <span class="col-md-2 control-label">@Model.Price.ToString("C")</span>
+
+
+
+
+

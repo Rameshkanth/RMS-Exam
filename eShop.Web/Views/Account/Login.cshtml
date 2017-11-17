@@ -1,7 +1,4 @@
-﻿@using System.Collections.Generic
-@using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Http.Authentication
-@using eShop.Web.ViewModels
+﻿@using eShop.Web.ViewModels
 @using Microsoft.AspNetCore.Identity
 @using eShop.Web.IdentityProvider
 @model LoginVm
@@ -42,7 +39,6 @@
             </form>
         </section>
     </div>
- 
 </div>
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

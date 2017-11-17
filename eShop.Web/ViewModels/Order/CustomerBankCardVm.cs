@@ -5,6 +5,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eShop.Web.ViewModels
 {
+    // To be moved to appropriate place
+    public class CardExpiryDateAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            DateTime dateTime = Convert.ToDateTime(value);
+            return dateTime <= DateTime.Now;
+        }
+    }
+
     public class CustomerBankCardVm
     {
         [Required]
@@ -17,14 +27,16 @@ namespace eShop.Web.ViewModels
         [Display(Name = "Card Number")]
         public string CardNumber { get; set; }
 
+        [Required]
         [Display(Name = "Cvv Number")]
         [DataType(DataType.CreditCard)]
         public string CvvNumber { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "Expiry Date")]
-        public double ExpiryDate  { get; set; }
+        [CardExpiryDate(ErrorMessage = "Your card is expired, please enter a valid expiry date or use another card")]
+        [Display(Name = "Expiry Date ")]
+        public DateTime ExpiryDate  { get; set; } = DateTime.Now;
 
     }
 }

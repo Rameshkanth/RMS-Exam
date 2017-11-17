@@ -1,0 +1,14 @@
+﻿@model eShop.Web.ViewModels.ProductVm
+@{
+    ViewData["Title"] = "Product List";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div style="height:200px;">
+   @await Html.PartialAsync("_ProductDetailsPartial", Model)
+    <a class="btn btn-default" asp-area="" asp-controller="Order" asp-action="Checkout" asp-route-id="@Model.Id">Buy</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -4,7 +4,6 @@
 }
 <h2>@ViewData["Title"]</h2>
 <form asp-controller="Order" asp-action="Buy" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    <h4>Checkout</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
@@ -21,7 +20,7 @@
             <span asp-validation-for="CustomerBankCard.CvvNumber" class="text-danger"></span>
         </div>
     </div>
-   
+
     <div class="form-group">
         <label asp-for="CustomerBankCard.CardNumber" class="col-md-2 control-label"></label>
         <div class="col-md-10">
@@ -29,6 +28,15 @@
             <span asp-validation-for="CustomerBankCard.CardNumber" class="text-danger"></span>
         </div>
     </div>
+
+    <div class="form-group">
+        <label asp-for="CustomerBankCard.ExpiryDate" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="CustomerBankCard.ExpiryDate" class="form-control" />
+            <span asp-validation-for="CustomerBankCard.ExpiryDate" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <div class="checkbox">
@@ -39,19 +47,30 @@
             </div>
         </div>
     </div>
+
     <div class="form-group">
-        <label asp-for=" Product.Price" class="col-md-2 control-label"></label>
+        <label asp-for=" Product.ProcuctName" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="Product.Price" class="form-control" />
-            <span asp-validation-for="Product.Price" class="text-danger"></span>
+            <input asp-for="Product.ProcuctName" class="form-control" readonly="readonly" />
         </div>
     </div>
- 
+
+    <div class="form-group">
+        <label asp-for=" Product.Price" class="col-md-2 control-label" ></label>
+        <div class="col-md-10">
+            <input asp-for="Product.Price" class="form-control" readonly="readonly" />
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-default">Buy</button>
         </div>
     </div>
+
+    <input 	type="hidden" asp-for="Product.Id" />
+
+
 </form>
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

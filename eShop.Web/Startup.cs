@@ -14,7 +14,6 @@ using eShop.Web.Services;
 using eShop.Web.DataAccess.UserIdentity;
 using eShop.Web.Core.Repositories;
 using eShop.Web.DataAccess.Repositories;
-using eShop.Web.Core.Entities;
 using eShop.Web.ViewModels;
 
 namespace eShop.Web
@@ -57,12 +56,16 @@ namespace eShop.Web
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IUserOrdersRepository, UserOrdersRepository>();
+            services.AddTransient<IUserOrderService, UserOrderService>();
+            services.AddTransient<IUserBankAccountRepository, UserBankAccountRepository>();
+            services.AddTransient<IUserBankAccountService, UserBankAccountService>();
 
             //Payment Gateways
-            services.AddTransient<ICustomerPaymentService, PaymentGateWayA>();
+            services.AddTransient<IPaymentGateWayService, PaymentGateWayService>();
 
             //RSA Crypto Service
-            services.AddSingleton<RSACryptoService>();
+            services.AddSingleton(RSACryptoService.Instance);
 
             services.AddMvc();
 

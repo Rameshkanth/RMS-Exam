@@ -12,7 +12,7 @@ namespace eShop.Web.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return RedirectToAction("List", "Product");
+            return RedirectToAction("ProductSearch", "Product");
         }
 
     }

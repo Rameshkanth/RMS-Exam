@@ -6,6 +6,7 @@ namespace eShop.Web.DataAccess.Repositories
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
-        Task<IEnumerable<Product>> GetProductsByProductName(string productName);
+        Task<IEnumerable<Product>> GetProductsAsync(int pageNumber, int pageSize, int sortExpression, SortDirection sortDirection, string searchPhrase);
+        Task<int> GetTotalNumberOfProducts();
     }
 }

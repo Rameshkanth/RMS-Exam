@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using eShop.Web.Entities;
+using System.Data;
 
 namespace eShop.Web.Core.Repositories
 {
@@ -16,14 +17,25 @@ namespace eShop.Web.Core.Repositories
             _connection = connection;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsByProductName(string productName)
+        public async Task<int> GetTotalNumberOfProducts()
         {
-            string sql = $"SELECT * FROM dbo.Products WHERE ProductName = @ProductName;";
+            int TotalNumberOfProducts = await _connection.QuerySingleOrDefaultAsync<int>("GetTotalNumberOfProducts");
 
-            return await _connection.QueryAsync<Product>(sql, new
+            return TotalNumberOfProducts;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsAsync(int pageNumber, int pageSize, int sortExpression, SortDirection sortDirection, string searchPhrase)
+        {
+            IEnumerable<Product> products = await _connection.QueryAsync<Product>("GetProducts", new
             {
-                ProductName = productName
-            });
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SortExpression = sortExpression,
+                SortDirection = sortDirection == SortDirection.Ascending ? "asc" : "desc",
+                SearchPhrase = searchPhrase
+            }, commandType: CommandType.StoredProcedure);
+
+            return products;
         }
 
     }

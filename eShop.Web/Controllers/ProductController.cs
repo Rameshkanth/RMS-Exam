@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
+using eShop.Web.Core.Entities;
+using System.Linq;
+using eShop.Web.Entities;
 
 namespace eShop.Web.Controllers
 {
@@ -28,17 +32,40 @@ namespace eShop.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult List()
+        [ActionName("ProductSearch")]
+        public IActionResult ProductList()
         {
-            var productListVm = new ProductListVm
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult GetAllProductsAsJson(DataTable dataTable)
+        {
+            int pageNumber = dataTable.Start / dataTable.Length + 1;
+            Order order = dataTable.Order.FirstOrDefault();
+
+            SortDirection sortDirection = order != null
+                ? (order.Direction == "asc" ? SortDirection.Ascending : SortDirection.Descending)
+                : SortDirection.Ascending;
+
+            ProductVm[] products = (_productService.GetAllProducts(pageNumber, dataTable.Length, order?.Column ?? 0, sortDirection,
+                string.IsNullOrEmpty(dataTable.Search.Value) ? string.Empty : dataTable.Search.Value)).ToArray();
+
+            int totalNumberOfProducts = _productService.GetTotalNumberOfProducts();
+
+            JsonResult jsonResult =  Json(new DataTableResponse<ProductVm>
             {
-                ProductList = _productService.GetAllProducts()
-            };
-            return View(productListVm);
+                Data = products,
+                RecordsFiltered = string.IsNullOrEmpty(dataTable.Search.Value) ? totalNumberOfProducts : products.Length,
+                Draw = dataTable.Draw,
+                RecordsTotal = totalNumberOfProducts
+            });
+
+            return jsonResult;
         }
 
         [HttpGet]
-        public IActionResult Information(Guid Id)
+        public IActionResult ProductDetails(Guid Id)
         {
             var productListVm = _productService.GetProduct(Id);
             return View(productListVm);
@@ -47,8 +74,8 @@ namespace eShop.Web.Controllers
         [HttpGet]
         public IActionResult Buy(Guid Id)
         {
-            var productListVm = _productService.GetProduct(Id);
-            return View(productListVm);
+            var productVm = _productService.GetProduct(Id);
+            return View(productVm);
         }
 
     }

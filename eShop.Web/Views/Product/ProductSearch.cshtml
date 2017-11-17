@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Product Search";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@{ await Html.RenderPartialAsync("_DataTablesStylesPartial"); }
+
+<div class="table-responsive">
+    <table class="table" cellspacing="0" id="products-table">
+        <thead>
+            <tr>
+                <th>Procuct Name</th>
+                <th></th>
+                <th>Procuct Description</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_DataTablesScriptsPartial"); }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var viewProductBaseUrl = '@Url.Action("ProductDetails", "Product")';
+            var imageBaseUrl = '@Url.Content("~/Images/products")';
+
+            $('#products-table').DataTable({
+                "ajax": {
+                    "url": "@Url.Action("GetAllProductsAsJson", "Product")",
+                    "type": "post"
+                },
+                "language": {
+                    "lengthMenu": "Show _MENU_ items per page",
+                    "zeroRecords": "Sorry, no products available to match your search",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total products)",
+                    "search": "Search (Name or Description)"
+                },
+                "serverSide": true,
+                "lengthMenu": [1, 5, 10, 25, 50, 75, 100],
+                "columns": [
+                    {
+                        "data": "procuctName",
+                        "className": "text-center"
+                    },
+                    {
+                        orderable: false,
+                        "render": function (data, type, row) {
+                            if (type === 'display') {
+                                return '<img src="' + imageBaseUrl + row.imageUrl + '" style="overflow: hidden; width:150px; height:150px;" />';
+                            }
+                            return '';
+                        },
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "shortDescription",
+                        "className": "text-center",
+                        orderable: false
+                    },
+                    {
+                        "data": "price", render: $.fn.dataTable.render.number(',', '.', 2, '£'),
+                        "className": "text-center"
+
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            if (type === 'display') {
+                                return '<a class="btn btn-default" href="' + viewProductBaseUrl + '/' + row.id + '">Details</a>';
+                            }
+
+                            return '';
+                        },
+                        "className": "text-center",
+                        orderable: false
+                    }]
+            });
+        });
+    </script>
+}
